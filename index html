@@ -12,7 +12,8 @@
             align-items: center;
             height: 100vh;
             background-color: #121212;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
+            overflow: hidden;
         }
         .container { text-align: center; }
         .help-btn {
@@ -22,44 +23,45 @@
             border: 10px solid #fff;
             background: radial-gradient(circle, #ff5252, #b71c1c);
             color: white;
-            font-size: 45px;
+            font-size: 40px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
-            transition: all 0.2s ease;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-decoration: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        .help-btn:active { transform: scale(0.92); box-shadow: 0 0 10px rgba(255, 0, 0, 0.8); }
-        .status-text { color: #aaa; margin-top: 25px; font-size: 18px; }
-        .icon { font-size: 70px; margin-bottom: 10px; }
+        .help-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(255, 0, 0, 0.9); }
+        .status-text { color: #ccc; margin-top: 25px; font-size: 18px; padding: 0 20px; }
+        .icon { font-size: 80px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <button class="help-btn" onclick="sendLocation()">
+    <div class="help-btn" onclick="sendLocation()">
         <span class="icon">🆘</span>
         <span>اضغط هنا</span>
-    </button>
-    <div id="status" class="status-text">سيتم إرسال موقعك فور الضغط على الزر</div>
+    </div>
+    <div id="status" class="status-text">اضغط على الدائرة الحمراء لإرسال موقعك</div>
 </div>
 
 <script>
+    // بياناتك الخاصة التي زودتني بها
     const botToken = "8036035151:AAGx8I8HfUM401Y_XrzHyTvGhpQC5RXNVBM";
     const chatId = "1230856956";
 
     function sendLocation() {
         const status = document.getElementById('status');
-        status.innerText = "جاري تحديد الموقع بدقة... انتظر ثواني";
+        status.innerText = "جاري تحديد موقعك بدقة... انتظر ثواني";
         status.style.color = "#ffeb3b";
 
         const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
+            enableHighAccuracy: true, // تفعيل الدقة القصوى بالمتر
+            timeout: 15000,           // زيادة وقت الانتظار لضمان جلب الموقع
             maximumAge: 0
         };
 
@@ -69,25 +71,37 @@
                 const lon = position.coords.longitude;
                 const accuracy = position.coords.accuracy.toFixed(1);
 
+                // رابط خرائط جوجل الرسمي والمباشر
                 const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                const telegramMsg = `🚨 **نداء استغاثة جديد!**\n\n📍 الدقة: حوالي ${accuracy} متر\n🔗 الرابط المباشر:\n${googleMapsUrl}`;
+                
+                const telegramMsg = `🚨 **نداء استغاثة جديد!**\n\n📍 الدقة: حوالي ${accuracy} متر\n🔗 اضغط هنا لفتح الموقع:\n${googleMapsUrl}`;
 
                 fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`)
                 .then(res => {
                     if(res.ok) {
-                        status.innerText = "✅ تم إرسال موقعك بنجاح لصديقك";
+                        status.innerText = "✅ تم الإرسال بنجاح. سأصل إليك قريباً.";
                         status.style.color = "#4caf50";
                     } else {
-                        status.innerText = "❌ فشل الإرسال، حاول مرة أخرى";
+                        status.innerText = "❌ فشل الإرسال. تأكد من توفر الإنترنت.";
+                        status.style.color = "#f44336";
                     }
+                })
+                .catch(err => {
+                    status.innerText = "❌ خطأ في الاتصال بالشبكة.";
+                    status.style.color = "#f44336";
                 });
 
             }, error => {
-                status.innerText = "⚠️ فشل تحديد الموقع، تأكد من تشغيل الـ GPS";
-                status.style.color = "#f44336";
+                // معالجة الأخطاء الشائعة
+                if (error.code === 1) {
+                    status.innerText = "⚠️ يجب عليك الضغط على 'سماح' (Allow) لمشاركة الموقع.";
+                } else {
+                    status.innerText = "⚠️ فشل تحديد الموقع، تأكد من تشغيل الـ GPS.";
+                }
+                status.style.color = "#ffeb3b";
             }, options);
         } else {
-            status.innerText = "المتصفح لا يدعم هذه الميزة";
+            status.innerText = "المتصفح لا يدعم هذه الميزة.";
         }
     }
 </script>

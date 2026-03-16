@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مساعد الطوارئ</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container { text-align: center; }
+        .help-btn {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 10px solid #fff;
+            background: radial-gradient(circle, #ff5252, #b71c1c);
+            color: white;
+            font-size: 45px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+        }
+        .help-btn:active { transform: scale(0.92); box-shadow: 0 0 10px rgba(255, 0, 0, 0.8); }
+        .status-text { color: #aaa; margin-top: 25px; font-size: 18px; }
+        .icon { font-size: 70px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="help-btn" onclick="sendLocation()">
+        <span class="icon">🆘</span>
+        <span>اضغط هنا</span>
+    </button>
+    <div id="status" class="status-text">سيتم إرسال موقعك فور الضغط على الزر</div>
+</div>
+
+<script>
+    const botToken = "8036035151:AAGx8I8HfUM401Y_XrzHyTvGhpQC5RXNVBM";
+    const chatId = "1230856956";
+
+    function sendLocation() {
+        const status = document.getElementById('status');
+        status.innerText = "جاري تحديد الموقع بدقة... انتظر ثواني";
+        status.style.color = "#ffeb3b";
+
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const accuracy = position.coords.accuracy.toFixed(1);
+
+                const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                const telegramMsg = `🚨 **نداء استغاثة جديد!**\n\n📍 الدقة: حوالي ${accuracy} متر\n🔗 الرابط المباشر:\n${googleMapsUrl}`;
+
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`)
+                .then(res => {
+                    if(res.ok) {
+                        status.innerText = "✅ تم إرسال موقعك بنجاح لصديقك";
+                        status.style.color = "#4caf50";
+                    } else {
+                        status.innerText = "❌ فشل الإرسال، حاول مرة أخرى";
+                    }
+                });
+
+            }, error => {
+                status.innerText = "⚠️ فشل تحديد الموقع، تأكد من تشغيل الـ GPS";
+                status.style.color = "#f44336";
+            }, options);
+        } else {
+            status.innerText = "المتصفح لا يدعم هذه الميزة";
+        }
+    }
+</script>
+
+</body>
+</html>
